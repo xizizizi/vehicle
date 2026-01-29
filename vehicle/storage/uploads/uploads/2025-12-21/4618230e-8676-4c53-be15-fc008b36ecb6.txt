@@ -1,0 +1,1614 @@
+<template>
+  <div class="app-container">
+    <div class="filter-container">
+      <el-card class="control-panel">
+        <div slot="header" class="panel-header">
+          <span>无人机聚类选址分析 - 南昌市真实数据</span>
+          <el-tag type="success">真实数据</el-tag>
+        </div>
+
+        <el-form :model="form" label-width="120px">
+          <el-form-item label="聚类数量">
+            <el-slider
+              v-model="form.clusterCount"
+              :min="2"
+              :max="10"
+              show-stops
+              :step="1"
+              show-input
+            >
+            </el-slider>
+          </el-form-item>
+
+          <el-form-item label="数据源">
+            <el-radio-group v-model="form.dataSource">
+              <el-radio label="real">实时百度数据</el-radio>
+              <el-radio label="default">本地真实数据</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button
+              type="primary"
+              @click="handleClusterAnalysis"
+              :loading="loading"
+              icon="el-icon-cpu"
+            >
+              开始聚类分析
+            </el-button>
+            <el-button @click="handleReset" icon="el-icon-refresh"
+              >重置</el-button
+            >
+            <el-button
+              @click="refreshRealData"
+              :loading="refreshing"
+              icon="el-icon-download"
+            >
+              更新实时数据
+            </el-button>
+          </el-form-item>
+        </el-form>
+
+        <!-- 聚类结果统计 -->
+        <el-row v-if="clusterResult" :gutter="20" class="stats-panel">
+          <el-col :span="4">
+            <div class="stat-item">
+              <div class="stat-value">
+                {{ clusterResult.metrics.totalPoints }}
+              </div>
+              <div class="stat-label">总POI数量</div>
+            </div>
+          </el-col>
+          <el-col :span="4">
+            <div class="stat-item">
+              <div class="stat-value">
+                {{ clusterResult.metrics.clusterCount }}
+              </div>
+              <div class="stat-label">聚类数量</div>
+            </div>
+          </el-col>
+          <el-col :span="4">
+            <div class="stat-item">
+              <div class="stat-value">
+                {{ clusterResult.metrics.silhouetteScore.toFixed(3) }}
+              </div>
+              <div class="stat-label">聚类质量</div>
+            </div>
+          </el-col>
+          <el-col :span="4">
+            <div class="stat-item">
+              <div class="stat-value">
+                {{ clusterResult.metrics.inertia.toFixed(0) }}
+              </div>
+              <div class="stat-label">聚类误差</div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+    </div>
+
+    <!-- 地图容器 -->
+    <div class="map-container">
+      <div id="mapContainer" class="map"></div>
+      <div class="map-legend" v-if="clusterResult">
+        <div class="legend-title">聚类图例</div>
+        <div
+          v-for="(cluster, index) in clusterResult.clusters"
+          :key="cluster.clusterId"
+          class="legend-item"
+        >
+          <div
+            class="legend-color"
+            :style="{ backgroundColor: CLUSTER_COLORS[index] }"
+          ></div>
+          <span
+            >聚类 {{ cluster.clusterId + 1 }} ({{
+              cluster.pointCount
+            }}个点)</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- 聚类结果详情 -->
+    <el-card v-if="clusterResult" class="result-panel">
+      <div slot="header">
+        <span>聚类分析详细结果</span>
+        <el-tag type="info">使用真实K-means算法</el-tag>
+      </div>
+
+      <el-collapse v-model="activeNames">
+        <el-collapse-item
+          v-for="cluster in clusterResult.clusters"
+          :key="cluster.clusterId"
+          :title="getClusterTitle(cluster)"
+          :name="cluster.clusterId"
+        >
+          <div class="cluster-detail">
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <div class="detail-section">
+                  <h4>位置信息</h4>
+                  <p>
+                    <strong>中心坐标:</strong>
+                    {{ cluster.center.lng.toFixed(6) }},
+                    {{ cluster.center.lat.toFixed(6) }}
+                  </p>
+                  <p><strong>覆盖半径:</strong> {{ cluster.maxDistance }} km</p>
+                  <p><strong>平均距离:</strong> {{ cluster.avgDistance }} km</p>
+                </div>
+              </el-col>
+              <el-col :span="12">
+                <div class="detail-section">
+                  <h4>POI类型分布</h4>
+                  <el-tag
+                    v-for="(count, type) in cluster.typeDistribution"
+                    :key="type"
+                    type="info"
+                    size="small"
+                    style="margin: 2px"
+                  >
+                    {{ type }}: {{ count }}
+                  </el-tag>
+                </div>
+              </el-col>
+            </el-row>
+
+            <div class="recommendation-section">
+              <h4>选址建议</h4>
+              <p class="recommendation-text">{{ cluster.recommendation }}</p>
+            </div>
+
+            <div class="points-section">
+              <h4>包含的POI点 ({{ cluster.points.length }}个)</h4>
+              <el-table
+                :data="cluster.points"
+                border
+                style="width: 100%"
+                height="300"
+              >
+                <el-table-column
+                  prop="name"
+                  label="地点名称"
+                  width="200"
+                ></el-table-column>
+                <el-table-column prop="type" label="类型" width="120">
+                  <template slot-scope="scope">
+                    <el-tag :type="getTypeTagType(scope.row.type)" size="small">
+                      {{ scope.row.type }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="lng" label="经度" width="130">
+                  <template slot-scope="scope">
+                    {{ scope.row.lng.toFixed(6) }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="lat" label="纬度" width="130">
+                  <template slot-scope="scope">
+                    {{ scope.row.lat.toFixed(6) }}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="address"
+                  label="地址"
+                  show-overflow-tooltip
+                ></el-table-column>
+              </el-table>
+            </div>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+    </el-card>
+  </div>
+</template>
+  
+  <script>
+import axios from "axios";
+
+// 百度地图颜色配置
+const CLUSTER_COLORS = [
+  "#FF6B6B",
+  "#4ECDC4",
+  "#45B7D1",
+  "#96CEB4",
+  "#FFEAA7",
+  "#DDA0DD",
+  "#98D8C8",
+  "#F7DC6F",
+  "#BB8FCE",
+  "#85C1E9",
+];
+
+export default {
+  name: "RealDroneCluster",
+  data() {
+    return {
+      loading: false,
+      refreshing: false,
+      form: {
+        clusterCount: 5,
+        dataSource: "default",
+      },
+      clusterResult: null,
+      activeNames: [0],
+      map: null,
+      markers: [],
+      clusterMarkers: [],
+      defaultLocations: [],
+      isMapLoaded: false,
+    };
+  },
+
+  mounted() {
+    this.loadDefaultData();
+    this.initBaiduMap();
+  },
+
+  methods: {
+    // 初始化百度地图
+    initBaiduMap() {
+      if (window.BMap) {
+        this.createMap();
+        return;
+      }
+
+      const AK = "B1d61NuTDv2wqQAI9FiDKQJjzAdfE2aE"; // 替换为您的百度地图AK
+      const script = document.createElement("script");
+      script.src = `https://api.map.baidu.com/api?v=3.0&ak=${AK}&callback=initBaiduMapCallback`;
+      document.head.appendChild(script);
+
+      window.initBaiduMapCallback = () => {
+        this.isMapLoaded = true;
+        this.createMap();
+      };
+
+      script.onerror = () => {
+        console.error("百度地图加载失败");
+        this.$message.error("百度地图加载失败，将显示表格数据");
+      };
+    },
+
+    // 创建地图
+    createMap() {
+      try {
+        this.map = new BMap.Map("mapContainer");
+        const point = new BMap.Point(115.8572, 28.6892); // 南昌中心点
+        this.map.centerAndZoom(point, 12);
+        this.map.enableScrollWheelZoom(true);
+
+        // 添加地图控件
+        this.map.addControl(new BMap.NavigationControl());
+        this.map.addControl(new BMap.ScaleControl());
+        this.map.addControl(new BMap.MapTypeControl());
+
+        console.log("百度地图初始化成功");
+
+        // 显示默认点
+        if (this.defaultLocations.length > 0) {
+          this.showDefaultPoints();
+        }
+      } catch (error) {
+        console.error("创建地图失败:", error);
+      }
+    },
+
+    // 加载默认数据
+    async loadDefaultData() {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/nanchang-data"
+        );
+        if (response.data.success) {
+          this.defaultLocations = response.data.data.locations;
+          if (this.isMapLoaded && this.map) {
+            this.showDefaultPoints();
+          }
+        }
+      } catch (error) {
+        console.error("加载数据失败:", error);
+        this.$message.error("加载数据失败");
+      }
+    },
+
+    // 刷新实时数据
+    async refreshRealData() {
+      this.refreshing = true;
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/nanchang-real-data"
+        );
+        if (response.data.success) {
+          this.defaultLocations = response.data.data.locations;
+          this.$message.success(
+            `成功获取 ${this.defaultLocations.length} 个实时POI数据`
+          );
+          if (this.isMapLoaded && this.map) {
+            this.showDefaultPoints();
+          }
+        }
+      } catch (error) {
+        console.error("刷新数据失败:", error);
+        this.$message.error("刷新实时数据失败");
+      } finally {
+        this.refreshing = false;
+      }
+    },
+
+    // 显示默认点
+    showDefaultPoints() {
+      if (!this.map) return;
+
+      this.clearMarkers();
+
+      this.defaultLocations.forEach((location) => {
+        try {
+          const point = new BMap.Point(location.lng, location.lat);
+          const marker = new BMap.Marker(point);
+
+          const label = new BMap.Label(`${location.name} (${location.type})`, {
+            offset: new BMap.Size(20, -10),
+          });
+          marker.setLabel(label);
+
+          // 添加点击事件
+          marker.addEventListener("click", () => {
+            this.showInfoWindow(marker, location);
+          });
+
+          this.map.addOverlay(marker);
+          this.markers.push(marker);
+        } catch (error) {
+          console.error("添加标记失败:", error);
+        }
+      });
+    },
+
+    // 显示信息窗口
+    showInfoWindow(marker, location) {
+      const content = `
+          <div style="padding: 10px;">
+            <h4>${location.name}</h4>
+            <p><strong>类型:</strong> ${location.type}</p>
+            <p><strong>坐标:</strong> ${location.lng.toFixed(
+              6
+            )}, ${location.lat.toFixed(6)}</p>
+            ${
+              location.address
+                ? `<p><strong>地址:</strong> ${location.address}</p>`
+                : ""
+            }
+          </div>
+        `;
+
+      const infoWindow = new BMap.InfoWindow(content);
+      marker.openInfoWindow(infoWindow);
+    },
+
+    // 执行聚类分析
+    async handleClusterAnalysis() {
+      this.loading = true;
+      try {
+        const response = await axios.post("http://localhost:5000/api/cluster", {
+          clusterCount: this.form.clusterCount,
+          locations: this.defaultLocations,
+        });
+
+        if (response.data.success) {
+          this.clusterResult = response.data.data;
+          this.visualizeClusters();
+          this.$message.success(
+            `聚类分析完成，轮廓系数: ${this.clusterResult.metrics.silhouetteScore.toFixed(
+              3
+            )}`
+          );
+        } else {
+          this.$message.error("分析失败: " + response.data.error);
+        }
+      } catch (error) {
+        console.error("聚类分析错误:", error);
+        this.$message.error(
+          "聚类分析失败: " + (error.message || "请检查后端服务")
+        );
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    // 可视化聚类结果
+    visualizeClusters() {
+      if (!this.map || !this.clusterResult) return;
+
+      this.clearClusterMarkers();
+
+      this.clusterResult.clusters.forEach((cluster, index) => {
+        const color = CLUSTER_COLORS[index % CLUSTER_COLORS.length];
+
+        // 添加聚类中心标记
+        const centerPoint = new BMap.Point(
+          cluster.center.lng,
+          cluster.center.lat
+        );
+        const centerMarker = new BMap.Marker(centerPoint, {
+          icon: this.createClusterIcon(color, cluster.pointCount),
+        });
+
+        const centerLabel = new BMap.Label(
+          `聚类中心 ${index + 1} (${cluster.pointCount}个POI)`,
+          {
+            offset: new BMap.Size(0, -50),
+          }
+        );
+        centerLabel.setStyle({
+          backgroundColor: color,
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          padding: "5px 10px",
+          fontSize: "12px",
+        });
+        centerMarker.setLabel(centerLabel);
+
+        this.map.addOverlay(centerMarker);
+        this.clusterMarkers.push(centerMarker);
+
+        // 添加聚类点标记
+        cluster.points.forEach((point) => {
+          const pointObj = new BMap.Point(point.lng, point.lat);
+          const marker = new BMap.Marker(pointObj, {
+            icon: this.createPointIcon(color),
+          });
+
+          const pointLabel = new BMap.Label(point.name, {
+            offset: new BMap.Size(15, -5),
+          });
+          marker.setLabel(pointLabel);
+
+          this.map.addOverlay(marker);
+          this.clusterMarkers.push(marker);
+        });
+
+        // 添加覆盖范围圆圈
+        const circle = new BMap.Circle(
+          centerPoint,
+          cluster.maxDistance * 1000,
+          {
+            strokeColor: color,
+            strokeWeight: 2,
+            strokeOpacity: 0.8,
+            fillColor: color,
+            fillOpacity: 0.1,
+          }
+        );
+        this.map.addOverlay(circle);
+        this.clusterMarkers.push(circle);
+      });
+    },
+
+    // 创建聚类中心图标
+    createClusterIcon(color, count) {
+      return new BMap.Icon(
+        `
+          <div style="
+            background-color: ${color};
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+          ">${count}</div>
+        `,
+        new BMap.Size(50, 50)
+      );
+    },
+
+    // 创建点图标
+    createPointIcon(color) {
+      return new BMap.Icon(
+        `
+          <div style="
+            background-color: ${color};
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            cursor: pointer;
+          "></div>
+        `,
+        new BMap.Size(15, 15)
+      );
+    },
+
+    // 获取聚类标题
+    getClusterTitle(cluster) {
+      return `聚类 ${cluster.clusterId + 1} - ${
+        cluster.pointCount
+      }个POI - 覆盖半径: ${cluster.maxDistance}km`;
+    },
+
+    // 获取类型标签样式
+    getTypeTagType(poiType) {
+      const typeMap = {
+        医疗: "danger",
+        交通: "warning",
+        教育: "success",
+        商业: "",
+        景点: "info",
+        政府: "warning",
+      };
+      return typeMap[poiType] || "info";
+    },
+
+    // 清除标记
+    clearMarkers() {
+      this.markers.forEach((marker) => {
+        try {
+          this.map.removeOverlay(marker);
+        } catch (error) {
+          console.error("清除标记错误:", error);
+        }
+      });
+      this.markers = [];
+    },
+
+    clearClusterMarkers() {
+      this.clusterMarkers.forEach((marker) => {
+        try {
+          this.map.removeOverlay(marker);
+        } catch (error) {
+          console.error("清除聚类标记错误:", error);
+        }
+      });
+      this.clusterMarkers = [];
+    },
+
+    handleReset() {
+      this.form.clusterCount = 5;
+      this.clusterResult = null;
+      this.clearClusterMarkers();
+      this.showDefaultPoints();
+    },
+  },
+
+  beforeDestroy() {
+    this.clearMarkers();
+    this.clearClusterMarkers();
+  },
+};
+</script>
+  
+  <style scoped>
+.app-container {
+  padding: 20px;
+  background: #f5f7fa;
+}
+
+.filter-container {
+  margin-bottom: 20px;
+}
+
+.control-panel {
+  max-width: 800px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.map-container {
+  height: 600px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+}
+
+.map-legend {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.legend-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 8px;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.stats-panel {
+  margin-top: 20px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  color: white;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.result-panel {
+  margin-top: 20px;
+}
+
+.cluster-detail {
+  padding: 15px;
+}
+
+.detail-section {
+  margin-bottom: 20px;
+}
+
+.detail-section h4 {
+  color: #409eff;
+  margin-bottom: 10px;
+  border-left: 4px solid #409eff;
+  padding-left: 10px;
+}
+
+.recommendation-section {
+  background: #f0f9ff;
+  padding: 15px;
+  border-radius: 6px;
+  margin: 15px 0;
+  border-left: 4px solid #409eff;
+}
+
+.recommendation-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+}
+
+.points-section {
+  margin-top: 20px;
+}
+
+.points-section h4 {
+  color: #67c23a;
+  margin-bottom: 10px;
+  border-left: 4px solid #67c23a;
+  padding-left: 10px;
+}
+</style>
+
+<template>
+  <div class="header">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h1><i class="fas fa-map-marker-alt me-2"></i>南昌POI数据选址系统</h1>
+          <p>基于百度地图API的南昌市兴趣点数据可视化与选址平台</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+          <div class="text-white-50">数据更新时间: {{ currentTime }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+  
+  <script>
+export default {
+  name: "HeaderComponent",
+  data() {
+    return {
+      currentTime: "",
+    };
+  },
+  mounted() {
+    this.updateTime();
+    // 每60秒更新时间
+    this.timer = setInterval(this.updateTime, 60000);
+  },
+  beforeDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+  },
+  methods: {
+    updateTime() {
+      const now = new Date();
+      this.currentTime = now
+        .toLocaleString("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        })
+        .replace(/\//g, "-");
+    },
+  },
+};
+</script>
+  
+  <style scoped>
+.header {
+  background: linear-gradient(135deg, #1e5799 0%, #207cca 100%);
+  color: white;
+  padding: 1.5rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  opacity: 0.9;
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.4rem;
+  }
+
+  .header p {
+    font-size: 0.9rem;
+  }
+}
+</style>
+
+<template>
+  <div class="map-container">
+    <div id="map" ref="mapContainer"></div>
+
+    <div class="legend">
+      <div class="legend-title">图例</div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #0d6efd"></div>
+        <span>医疗设施</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #198754"></div>
+        <span>教育机构</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #ffc107"></div>
+        <span>商业场所</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #dc3545"></div>
+        <span>景点公园</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #6c757d"></div>
+        <span>交通设施</span>
+      </div>
+    </div>
+  </div>
+</template>
+  
+  <script>
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// POI数据 - 与SidebarComponent中相同
+const nanchangPOIData = {
+  data: {
+    city: "南昌",
+    count: 50,
+    description: "从百度地图API实时获取的POI数据",
+    locations: [
+      // 这里放入完整的POI数据
+      // 由于数据较长，这里省略，实际使用时需要完整复制
+    ],
+    source: "baidu_map_api",
+    update_time: "2025-11-26 15:40:49",
+  },
+  success: true,
+};
+
+export default {
+  name: "MapComponent",
+  props: {
+    selectedLocation: Object,
+  },
+  data() {
+    return {
+      map: null,
+      markers: [],
+      selectedMarker: null,
+      typeColors: {
+        医疗: "#0d6efd",
+        教育: "#198754",
+        商业: "#ffc107",
+        景点: "#dc3545",
+        交通: "#6c757d",
+      },
+    };
+  },
+  mounted() {
+    this.initMap();
+    this.initPOIData();
+  },
+  watch: {
+    selectedLocation(newLocation) {
+      this.highlightSelectedLocation(newLocation);
+    },
+  },
+  methods: {
+    initMap() {
+      this.map = L.map(this.$refs.mapContainer).setView([28.68, 115.89], 12);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(this.map);
+    },
+    initPOIData() {
+      const locations = nanchangPOIData.data.locations;
+
+      // 清空现有标记
+      this.markers.forEach((marker) => this.map.removeLayer(marker));
+      this.markers = [];
+
+      // 创建标记
+      locations.forEach((location) => {
+        const marker = L.marker([location.lat, location.lng], {
+          icon: L.divIcon({
+            className: "custom-marker",
+            html: `<div style="background-color: ${
+              this.typeColors[location.type]
+            }; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [16, 16],
+            iconAnchor: [8, 8],
+          }),
+        }).addTo(this.map);
+
+        // 添加弹出窗口
+        marker.bindPopup(`
+            <div class="popup-content">
+              <h6>${location.name}</h6>
+              <p class="mb-1"><strong>类型:</strong> ${location.type}</p>
+              <p class="mb-1"><strong>地址:</strong> ${location.address}</p>
+              <p class="mb-0"><strong>坐标:</strong> ${location.lat.toFixed(
+                6
+              )}, ${location.lng.toFixed(6)}</p>
+              <button class="btn btn-sm btn-primary mt-2 w-100 select-location-btn" data-id="${
+                location.id
+              }">
+                <i class="fas fa-check me-1"></i> 选择此位置
+              </button>
+            </div>
+          `);
+
+        // 存储标记和位置数据
+        marker.locationData = location;
+        this.markers.push(marker);
+
+        // 添加点击事件
+        marker.on("click", () => {
+          this.$emit("location-selected", location);
+        });
+
+        // 为弹出窗口中的按钮添加事件
+        marker.on("popupopen", () => {
+          const popup = marker.getPopup();
+          const popupElement = popup.getElement();
+          const selectButton = popupElement.querySelector(
+            ".select-location-btn"
+          );
+          if (selectButton) {
+            selectButton.addEventListener("click", () => {
+              this.$emit("location-selected", location);
+            });
+          }
+        });
+      });
+    },
+    highlightSelectedLocation(location) {
+      // 清除之前选中的标记
+      if (this.selectedMarker) {
+        this.selectedMarker.setIcon(
+          L.divIcon({
+            className: "custom-marker",
+            html: `<div style="background-color: ${
+              this.typeColors[this.selectedMarker.locationData.type]
+            }; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [16, 16],
+            iconAnchor: [8, 8],
+          })
+        );
+      }
+
+      if (location) {
+        // 找到对应的标记
+        this.selectedMarker = this.markers.find(
+          (marker) => marker.locationData.id === location.id
+        );
+
+        if (this.selectedMarker) {
+          // 高亮选中的标记
+          this.selectedMarker.setIcon(
+            L.divIcon({
+              className: "custom-marker selected",
+              html: `<div style="background-color: #e53935; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.4);"></div>`,
+              iconSize: [22, 22],
+              iconAnchor: [11, 11],
+            })
+          );
+
+          // 居中显示选中的标记
+          this.map.setView([location.lat, location.lng], 15);
+        }
+      } else {
+        this.selectedMarker = null;
+      }
+    },
+    beforeDestroy() {
+      if (this.map) {
+        this.map.remove();
+      }
+    },
+  },
+};
+</script>
+  
+  <style scoped>
+.map-container {
+  flex: 1;
+  position: relative;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.legend {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.legend-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 0.8rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .map-container {
+    height: 60vh;
+  }
+}
+</style>
+
+
+<template>
+    <div>
+      <HeaderComponent />
+      <div class="main-container">
+        <SidebarComponent 
+          :selectedLocation="selectedLocation"
+          @select-location="selectLocation"
+          @clear-selection="clearSelection"
+          @route-plan="handleRoutePlan"
+        />
+        <MapComponent 
+          :selectedLocation="selectedLocation"
+          @location-selected="selectLocation"
+        />
+      </div>
+    </div>
+  </template>
+  
+  <script>
+  import HeaderComponent from './HeaderComponent.vue'
+  import SidebarComponent from './SidebarComponent.vue'
+  import MapComponent from './MapComponent.vue'
+  
+  export default {
+    name: 'NanchangPOISystem',
+    components: {
+      HeaderComponent,
+      SidebarComponent,
+      MapComponent
+    },
+    data() {
+      return {
+        selectedLocation: null
+      }
+    },
+    methods: {
+      selectLocation(location) {
+        this.selectedLocation = location
+      },
+      clearSelection() {
+        this.selectedLocation = null
+      },
+      handleRoutePlan() {
+        if (this.selectedLocation) {
+          alert(`开始从当前位置到 ${this.selectedLocation.name} 的路径规划\n坐标: ${this.selectedLocation.lat.toFixed(6)}, ${this.selectedLocation.lng.toFixed(6)}`)
+          // 这里可以调用后端的路径规划API
+        } else {
+          alert('请先选择一个位置')
+        }
+      }
+    }
+  }
+  </script>
+  
+  <style scoped>
+  .main-container {
+    display: flex;
+    min-height: calc(100vh - 120px);
+  }
+  
+  @media (max-width: 768px) {
+    .main-container {
+      flex-direction: column;
+    }
+  }
+  </style>
+
+<template>
+    <div class="sidebar">
+      <div class="filter-section">
+        <h5 class="filter-title"><i class="fas fa-filter me-2"></i>类型筛选</h5>
+        <div class="filter-buttons">
+          <button 
+            v-for="type in poiTypes" 
+            :key="type.value"
+            class="filter-btn"
+            :class="[type.class, { active: activeTypes.includes(type.value) }]"
+            @click="toggleFilter(type.value)"
+          >
+            <i :class="type.icon" class="me-1"></i> {{ type.label }}
+          </button>
+        </div>
+        <div class="input-group mb-3">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="搜索地点名称..." 
+            v-model="searchQuery"
+            @keyup.enter="performSearch"
+          >
+          <button class="btn btn-outline-primary" type="button" @click="performSearch">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="filter-section">
+        <h5 class="filter-title"><i class="fas fa-list me-2"></i>POI列表</h5>
+        <div class="poi-list" v-if="filteredLocations.length > 0">
+          <div 
+            v-for="location in filteredLocations" 
+            :key="location.id"
+            class="poi-item"
+            @click="$emit('select-location', location)"
+            :class="{ active: selectedLocation && selectedLocation.id === location.id }"
+          >
+            <div class="poi-name">{{ location.name }}</div>
+            <div class="poi-address">{{ location.address }}</div>
+            <div>
+              <span class="poi-type" :class="`${location.type}-badge`">
+                <i :class="typeIcons[location.type]" class="me-1"></i>{{ location.type }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div v-else class="no-data">
+          <i class="fas fa-search fa-2x mb-2"></i>
+          <p>未找到匹配的地点</p>
+        </div>
+      </div>
+      
+      <div v-if="selectedLocation" class="selected-location">
+        <h6 class="selected-title"><i class="fas fa-check-circle me-2"></i>已选位置</h6>
+        <div>
+          <div class="poi-name">{{ selectedLocation.name }}</div>
+          <div class="poi-address">{{ selectedLocation.address }}</div>
+          <div class="mt-2">
+            <span class="poi-type" :class="`${selectedLocation.type}-badge`">
+              <i :class="typeIcons[selectedLocation.type]" class="me-1"></i>{{ selectedLocation.type }}
+            </span>
+          </div>
+          <div class="mt-2">
+            <small><strong>坐标:</strong> {{ selectedLocation.lat.toFixed(6) }}, {{ selectedLocation.lng.toFixed(6) }}</small>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-primary action-btn" @click="$emit('route-plan')">
+            <i class="fas fa-route me-1"></i> 路径规划
+          </button>
+          <button class="btn btn-outline-secondary action-btn" @click="$emit('clear-selection')">
+            <i class="fas fa-times me-1"></i> 清除
+          </button>
+        </div>
+      </div>
+      
+      <div class="stats-section">
+        <h5 class="filter-title"><i class="fas fa-chart-bar me-2"></i>数据统计</h5>
+        <div>
+          <div v-for="(count, type) in typeCounts" :key="type" class="stat-item">
+            <span>{{ type }}:</span>
+            <span class="stat-value">{{ count }} 个</span>
+          </div>
+          <div class="stat-item">
+            <span><strong>总计:</strong></span>
+            <span class="stat-value"><strong>{{ totalCount }} 个</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script>
+  // 模拟POI数据
+  const nanchangPOIData = {
+    "data": {
+      "city": "南昌",
+      "count": 50,
+      "description": "从百度地图API实时获取的POI数据",
+      "locations": [
+        {
+          "address": "江西省南昌市南昌县东岳大道1519号",
+          "id": 6600513869935474052,
+          "lat": 28.597035,
+          "lng": 115.868863,
+          "name": "南昌大学第一附属医院(象湖院区)",
+          "type": "医疗"
+        },
+        {
+          "address": "江西省南昌市东湖区永外正街17号",
+          "id": 6600513869935474053,
+          "lat": 28.689578,
+          "lng": 115.897229,
+          "name": "南昌大学第一附属医院(东湖院区)",
+          "type": "医疗"
+        },
+        {
+          "address": "江西省南昌市东湖区八一大道463号",
+          "id": 6600513869935474054,
+          "lat": 28.674892,
+          "lng": 115.904367,
+          "name": "南昌大学第二附属医院",
+          "type": "医疗"
+        },
+        {
+          "address": "江西省南昌市青山湖区南京西路181号",
+          "id": 6600513869935474055,
+          "lat": 28.688367,
+          "lng": 115.927756,
+          "name": "江西省人民医院",
+          "type": "医疗"
+        },
+        {
+          "address": "江西省南昌市东湖区民德路1号",
+          "id": 6600513869935474056,
+          "lat": 28.681945,
+          "lng": 115.892578,
+          "name": "南昌市第一医院",
+          "type": "医疗"
+        },
+        {
+          "address": "江西省南昌市红谷滩区学府大道999号",
+          "id": 6600513869935474057,
+          "lat": 28.663356,
+          "lng": 115.806945,
+          "name": "南昌大学",
+          "type": "教育"
+        },
+        {
+          "address": "江西省南昌市青山湖区北京东路339号",
+          "id": 6600513869935474058,
+          "lat": 28.678923,
+          "lng": 115.952367,
+          "name": "江西师范大学",
+          "type": "教育"
+        },
+        {
+          "address": "江西省南昌市青山湖区双港东大街169号",
+          "id": 6600513869935474059,
+          "lat": 28.749856,
+          "lng": 115.857234,
+          "name": "华东交通大学",
+          "type": "教育"
+        },
+        {
+          "address": "江西省南昌市红谷滩区丰和南大道696号",
+          "id": 6600513869935474060,
+          "lat": 28.648912,
+          "lng": 115.826745,
+          "name": "南昌航空大学",
+          "type": "教育"
+        },
+        {
+          "address": "江西省南昌市新建区长征西路",
+          "id": 6600513869935474061,
+          "lat": 28.692345,
+          "lng": 115.817634,
+          "name": "南昌西站",
+          "type": "交通"
+        },
+        {
+          "address": "江西省南昌市西湖区站前路",
+          "id": 6600513869935474062,
+          "lat": 28.662189,
+          "lng": 115.908756,
+          "name": "南昌站",
+          "type": "交通"
+        },
+        {
+          "address": "江西省南昌市青云谱区井冈山大道",
+          "id": 6600513869935474063,
+          "lat": 28.635678,
+          "lng": 115.912345,
+          "name": "徐坊客运站",
+          "type": "交通"
+        },
+        {
+          "address": "江西省南昌市东湖区八一大道",
+          "id": 6600513869935474064,
+          "lat": 28.681234,
+          "lng": 115.893456,
+          "name": "八一广场",
+          "type": "景点"
+        },
+        {
+          "address": "江西省南昌市东湖区仿古街58号",
+          "id": 6600513869935474065,
+          "lat": 28.688945,
+          "lng": 115.889067,
+          "name": "滕王阁",
+          "type": "景点"
+        },
+        {
+          "address": "江西省南昌市西湖区中山路",
+          "id": 6600513869935474066,
+          "lat": 28.679834,
+          "lng": 115.895678,
+          "name": "中山路商业街",
+          "type": "商业"
+        },
+        {
+          "address": "江西省南昌市红谷滩区会展路",
+          "id": 6600513869935474067,
+          "lat": 28.674523,
+          "lng": 115.852189,
+          "name": "红谷滩万达广场",
+          "type": "商业"
+        }
+      ],
+      "source": "baidu_map_api",
+      "update_time": "2025-11-26 15:40:49"
+    },
+    "success": true
+  }
+  
+  export default {
+    name: 'SidebarComponent',
+    props: {
+      selectedLocation: Object
+    },
+    data() {
+      return {
+        poiData: nanchangPOIData.data.locations,
+        activeTypes: ['医疗', '教育', '商业', '景点', '交通'],
+        searchQuery: '',
+        poiTypes: [
+          { value: '医疗', label: '医疗', class: 'medical', icon: 'fas fa-hospital' },
+          { value: '教育', label: '教育', class: 'education', icon: 'fas fa-school' },
+          { value: '商业', label: '商业', class: 'commercial', icon: 'fas fa-shopping-cart' },
+          { value: '景点', label: '景点', class: 'attraction', icon: 'fas fa-tree' },
+          { value: '交通', label: '交通', class: 'transport', icon: 'fas fa-subway' }
+        ],
+        typeIcons: {
+          '医疗': 'fas fa-hospital',
+          '教育': 'fas fa-school',
+          '商业': 'fas fa-shopping-cart',
+          '景点': 'fas fa-tree',
+          '交通': 'fas fa-subway'
+        }
+      }
+    },
+    computed: {
+      filteredLocations() {
+        return this.poiData.filter(location => {
+          const typeMatch = this.activeTypes.includes(location.type)
+          const searchMatch = !this.searchQuery || 
+            location.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+            location.address.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+            location.type.toLowerCase().includes(this.searchQuery.toLowerCase())
+          return typeMatch && searchMatch
+        })
+      },
+      typeCounts() {
+        const counts = {}
+        this.poiData.forEach(location => {
+          counts[location.type] = (counts[location.type] || 0) + 1
+        })
+        return counts
+      },
+      totalCount() {
+        return this.poiData.length
+      }
+    },
+    methods: {
+      toggleFilter(type) {
+        const index = this.activeTypes.indexOf(type)
+        if (index > -1) {
+          this.activeTypes.splice(index, 1)
+        } else {
+          this.activeTypes.push(type)
+        }
+      },
+      performSearch() {
+        if (this.searchQuery.trim()) {
+          const found = this.poiData.find(location => 
+            location.name.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
+            location.address.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+            location.type.toLowerCase().includes(this.searchQuery.toLowerCase())
+          )
+          if (found) {
+            this.$emit('select-location', found)
+          } else {
+            alert('未找到匹配的地点')
+          }
+        }
+      }
+    }
+  }
+  </script>
+  
+  <style scoped>
+  .sidebar {
+    width: 320px;
+    background-color: white;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+  
+  .filter-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .filter-title {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+  
+  .filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .filter-btn {
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+  
+  .filter-btn.active {
+    color: white;
+  }
+  
+  .filter-btn.medical { background-color: #e8f4fd; color: #0d6efd; }
+  .filter-btn.medical.active { background-color: #0d6efd; }
+  
+  .filter-btn.education { background-color: #e7f7ed; color: #198754; }
+  .filter-btn.education.active { background-color: #198754; }
+  
+  .filter-btn.commercial { background-color: #fff3cd; color: #ffc107; }
+  .filter-btn.commercial.active { background-color: #ffc107; color: #000; }
+  
+  .filter-btn.attraction { background-color: #f8d7da; color: #dc3545; }
+  .filter-btn.attraction.active { background-color: #dc3545; }
+  
+  .filter-btn.transport { background-color: #e2e3e5; color: #6c757d; }
+  .filter-btn.transport.active { background-color: #6c757d; }
+  
+  .poi-list {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .poi-item {
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 12px 15px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  
+  .poi-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .poi-item.active {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
+  }
+  
+  .poi-item:last-child {
+    border-bottom: none;
+  }
+  
+  .poi-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+  }
+  
+  .poi-address {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  
+  .poi-type {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-right: 8px;
+  }
+  
+  .medical-badge { background-color: #e8f4fd; color: #0d6efd; }
+  .education-badge { background-color: #e7f7ed; color: #198754; }
+  .commercial-badge { background-color: #fff3cd; color: #856404; }
+  .attraction-badge { background-color: #f8d7da; color: #721c24; }
+  .transport-badge { background-color: #e2e3e5; color: #383d41; }
+  
+  .selected-location {
+    background-color: #e3f2fd;
+    border-left: 4px solid #1e88e5;
+    padding: 15px;
+    margin-top: 1.5rem;
+    border-radius: 8px;
+  }
+  
+  .selected-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #1e88e5;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+  }
+  
+  .action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+  
+  .stats-section {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+  }
+  
+  .stat-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+  
+  .stat-value {
+    font-weight: 600;
+    color: #1e88e5;
+  }
+  
+  .no-data {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #6c757d;
+  }
+  
+  .no-data i {
+    opacity: 0.5;
+  }
+  
+  .no-data p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+      max-height: 40vh;
+    }
+  }
+  </style>

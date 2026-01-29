@@ -1,0 +1,37 @@
+DispatchController（保持不变）：
+GET /api/uavs - 获取所有无人机（调度用）
+
+GET /api/orders - 获取所有订单
+
+GET /api/missions - 获取所有任务
+
+GET /api/locations - 获取关键位置
+
+等其他调度相关接口
+
+UavController（新的管理接口）：
+GET /api/uav-manage/all - 获取所有无人机（管理用）
+
+POST /api/uav-manage/add - 添加无人机
+
+GET /api/uav-manage/detail/{id} - 获取无人机详情
+
+PUT /api/uav-manage/update/{id} - 更新无人机
+
+DELETE /api/uav-manage/delete/{id} - 删除无人机
+
+GET /api/uav-manage/status/{status} - 根据状态查询无人机
+
+POST /api/uav-manage/search - 搜索无人机
+
+GET /api/uav-manage/statistics - 获取无人机统计
+
+POST /api/uav-manage/batch-import - 批量导入无人机
+
+PUT /api/uav-manage/location/{id} - 更新无人机位置
+
+PUT /api/uav-manage/status/{id} - 更新无人机状态
+
+PUT /api/uav-manage/battery/{id} - 更新无人机电量
+
+GET /api/uav-manage/nanchang-locations - 获取南昌地点列表

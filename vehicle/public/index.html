@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- 原有 meta 标签保持不变 -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <title><%= webpackConfig.name %></title>
+
+    <!-- 添加全局背景样式 -->
+    <style>
+      body {
+        background-image: url("<%= BASE_URL %>backgrounds/bg.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      #app {
+        border-radius: 8px; /* 可选：添加圆角 */
+        min-height: 100vh;
+      }
+    </style>
+
+    <!-- 引入百度地图API -->
+    <script src="//api.map.baidu.com/api?v=2.0&ak=Gv6VHgHiK0Ve2Jwv5hYbS9mjI0oTkWW6"></script>
+
+    <!-- 引入MapVGL -->
+    <script src="https://code.bdstatic.com/npm/mapvgl@1.0.0-beta.189/dist/mapvgl.min.js"></script>
+    <!-- 百度地图 JS API (WebGL版，推荐) -->
+    <script src="https://api.map.baidu.com/api?v=1.0&type=webgl&ak=Gv6VHgHiK0Ve2Jwv5hYbS9mjI0oTkWW6"></script>
+
+    <!-- MapVGL 库 -->
+    <script src="https://mapv.baidu.com/build/mapvgl/mapvgl.min.js"></script>
+    <script src="https://mapv.baidu.com/build/mapvgl/mapvgl.threelayers.min.js"></script>
+  </head>
+  <body>
+    <noscript>
+      <strong
+        >We're sorry but <%= webpackConfig.name %> doesn't work properly without
+        JavaScript enabled. Please enable it to continue.</strong
+      >
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
