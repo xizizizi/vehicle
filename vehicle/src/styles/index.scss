@@ -1,0 +1,125 @@
+@import './variables.scss';
+@import './mixin.scss';
+@import './transition.scss';
+@import './element-ui.scss';
+@import './sidebar.scss';
+
+body {
+    height: 100%;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+}
+
+label {
+    font-weight: 700;
+}
+
+html {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#app {
+    height: 100%;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+a:focus,
+a:active {
+    outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+}
+
+div:focus {
+    outline: none;
+}
+
+.clearfix {
+    &:after {
+        visibility: hidden;
+        display: block;
+        font-size: 0;
+        content: " ";
+        clear: both;
+        height: 0;
+    }
+}
+
+// main-container global css
+.app-container {
+    padding: 20px;
+}
+
+/* ========== 全局响应式修复（新增） ========== */
+/* 1. 让 element-ui 表格在窄屏下横向滚动，而不是压扁列 */
+.el-table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.el-table .el-table__body-wrapper {
+    overflow-x: auto;
+}
+
+/* 2. 让 element-ui 卡片内部自动换行 */
+.el-card__body {
+    word-break: break-word;
+}
+
+/* 3. 全局盒子模型统一，避免内边距导致的宽度溢出 */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* 4. 让 body 和 #app 占满视口，且禁止横向溢出（已有，但再次强调） */
+html,
+body,
+#app {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* 5. 所有 flex 子项允许收缩（防止内容撑开父容器） */
+.flex-child,
+[class*="flex"]>* {
+    min-width: 0;
+}
+
+/* 6. 响应式工具类（可选） */
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e2a3a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #03d3ec;
+    border-radius: 4px; }

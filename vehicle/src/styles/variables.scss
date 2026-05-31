@@ -1,0 +1,24 @@
+// sidebar
+$menuText:#bfcbd9;
+$menuActiveText:#387fc7;
+$subMenuActiveText:#fff; //https://github.com/ElemeFE/element/issues/12951
+$menuBg: #001529; // 侧边栏背景深蓝（接近黑色）
+$menuHover: rgba(60, 151, 237, 0.2); // 悬停半透明蓝色
+
+$subMenuBg: #02233f; // 子菜单更深蓝色
+$subMenuHover: rgba(24, 144, 255, 0.3); // 子菜单悬停稍亮
+
+$sideBarWidth: 200px;
+
+// the :export directive is the magic sauce for webpack
+// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+:export {
+  menuText: $menuText;
+  menuActiveText: $menuActiveText;
+  subMenuActiveText: $subMenuActiveText;
+  menuBg: $menuBg;
+  menuHover: $menuHover;
+  subMenuBg: $subMenuBg;
+  subMenuHover: $subMenuHover;
+  sideBarWidth: $sideBarWidth;
+}

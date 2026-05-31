@@ -1,0 +1,799 @@
+{
+  "real_world_scenarios": [
+    {
+      "scenario_name": "电力线路巡检 - 正常情况",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-31.8%)，无法保证安全返航",
+        "priority": "normal",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 75.0,
+          "soh_percent": 92.0,
+          "temperature_c": 32.0,
+          "resistance_ohm": 0.04,
+          "total_energy_wh": 133.2,
+          "current_energy_wh": 99.9,
+          "effective_energy_wh": 91.91,
+          "max_power_w": 3080.2,
+          "temp_factor": 0.94
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 6.0,
+          "remaining_mission_energy_wh": 51.04,
+          "return_energy_wh": 61.25,
+          "total_required_energy_wh": 134.75,
+          "energy_deficit_wh": -42.84,
+          "energy_safety_margin_percent": -31.8
+        },
+        "environment_factors": {
+          "wind_speed_mps": 3.0,
+          "ambient_temp_c": 22.0,
+          "wind_factor": 1.0,
+          "temp_effect_factor": 1.05
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-31.8%)，无法保证安全返航",
+          "priority": "normal",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 2.5,
+          "estimated_energy_consumption_wh": 75.0,
+          "estimated_time_minutes": 7.5,
+          "total_path_cost": 3.5,
+          "can_safely_reach": true,
+          "remaining_energy_after_reaching_wh": 1.91,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "电力巡检 - 突发大风天气",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-77.0%)，无法保证安全返航",
+        "priority": "normal",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 65.0,
+          "soh_percent": 88.0,
+          "temperature_c": 38.0,
+          "resistance_ohm": 0.05,
+          "total_energy_wh": 133.2,
+          "current_energy_wh": 86.58,
+          "effective_energy_wh": 76.19,
+          "max_power_w": 2464.2,
+          "temp_factor": 0.76
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 8.0,
+          "remaining_mission_energy_wh": 125.22,
+          "return_energy_wh": 150.27,
+          "total_required_energy_wh": 330.59,
+          "energy_deficit_wh": -254.4,
+          "energy_safety_margin_percent": -77.0
+        },
+        "environment_factors": {
+          "wind_speed_mps": 12.0,
+          "ambient_temp_c": 18.0,
+          "wind_factor": 1.4,
+          "temp_effect_factor": 1.15
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-77.0%)，无法保证安全返航",
+          "priority": "normal",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 3.0,
+          "estimated_energy_consumption_wh": 126.0,
+          "estimated_time_minutes": 9.0,
+          "total_path_cost": 4.92,
+          "can_safely_reach": false,
+          "remaining_energy_after_reaching_wh": 0,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "电力巡检 - 电池老化情况",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-48.1%)，无法保证安全返航",
+        "priority": "normal",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 70.0,
+          "soh_percent": 72.0,
+          "temperature_c": 36.0,
+          "resistance_ohm": 0.08,
+          "total_energy_wh": 133.2,
+          "current_energy_wh": 93.24,
+          "effective_energy_wh": 67.13,
+          "max_power_w": 1540.1,
+          "temp_factor": 0.82
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 5.0,
+          "remaining_mission_energy_wh": 49.02,
+          "return_energy_wh": 58.82,
+          "total_required_energy_wh": 129.4,
+          "energy_deficit_wh": -62.27,
+          "energy_safety_margin_percent": -48.1
+        },
+        "environment_factors": {
+          "wind_speed_mps": 4.0,
+          "ambient_temp_c": 25.0,
+          "wind_factor": 1.1,
+          "temp_effect_factor": 1.1
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-48.1%)，无法保证安全返航",
+          "priority": "normal",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 1.8,
+          "estimated_energy_consumption_wh": 59.4,
+          "estimated_time_minutes": 5.4,
+          "total_path_cost": 2.838,
+          "can_safely_reach": false,
+          "remaining_energy_after_reaching_wh": 0,
+          "health_factor_impact": 1.08
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "🔄 电池健康度下降，考虑近期更换",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "电力紧急抢修任务",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-74.9%)，无法保证安全返航",
+        "priority": "high",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 55.0,
+          "soh_percent": 85.0,
+          "temperature_c": 40.0,
+          "resistance_ohm": 0.06,
+          "total_energy_wh": 133.2,
+          "current_energy_wh": 73.26,
+          "effective_energy_wh": 62.27,
+          "max_power_w": 2053.5,
+          "temp_factor": 0.7
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 12.0,
+          "remaining_mission_energy_wh": 94.11,
+          "return_energy_wh": 112.93,
+          "total_required_energy_wh": 248.45,
+          "energy_deficit_wh": -186.18,
+          "energy_safety_margin_percent": -74.9
+        },
+        "environment_factors": {
+          "wind_speed_mps": 5.0,
+          "ambient_temp_c": 28.0,
+          "wind_factor": 1.1,
+          "temp_effect_factor": 1.1
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-74.9%)，无法保证安全返航",
+          "priority": "high",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 4.0,
+          "estimated_energy_consumption_wh": 132.0,
+          "estimated_time_minutes": 12.0,
+          "total_path_cost": 5.84,
+          "can_safely_reach": false,
+          "remaining_energy_after_reaching_wh": 0,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "夏季高温环境巡检",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-16.3%)，无法保证安全返航",
+        "priority": "normal",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 68.0,
+          "soh_percent": 87.0,
+          "temperature_c": 48.0,
+          "resistance_ohm": 0.05,
+          "total_energy_wh": 133.2,
+          "current_energy_wh": 90.58,
+          "effective_energy_wh": 78.8,
+          "max_power_w": 2464.2,
+          "temp_factor": 0.7
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 4.0,
+          "remaining_mission_energy_wh": 35.65,
+          "return_energy_wh": 42.78,
+          "total_required_energy_wh": 94.11,
+          "energy_deficit_wh": -15.31,
+          "energy_safety_margin_percent": -16.3
+        },
+        "environment_factors": {
+          "wind_speed_mps": 2.0,
+          "ambient_temp_c": 35.0,
+          "wind_factor": 1.0,
+          "temp_effect_factor": 1.1
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-16.3%)，无法保证安全返航",
+          "priority": "normal",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 2.2,
+          "estimated_energy_consumption_wh": 66.0,
+          "estimated_time_minutes": 6.6,
+          "total_path_cost": 3.08,
+          "can_safely_reach": false,
+          "remaining_energy_after_reaching_wh": 0,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "🌡️ 注意电池温度，避免长时间高温运行",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "冬季低温环境巡检",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "继续任务",
+        "reason": "",
+        "priority": "normal",
+        "recommended_station_type": "充电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 80.0,
+          "soh_percent": 90.0,
+          "temperature_c": 8.0,
+          "resistance_ohm": 0.07,
+          "total_energy_wh": 133.2,
+          "current_energy_wh": 106.56,
+          "effective_energy_wh": 95.9,
+          "max_power_w": 1760.1,
+          "temp_factor": 0.8
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 3.0,
+          "remaining_mission_energy_wh": 32.08,
+          "return_energy_wh": 38.5,
+          "total_required_energy_wh": 84.7,
+          "energy_deficit_wh": 11.2,
+          "energy_safety_margin_percent": 13.2
+        },
+        "environment_factors": {
+          "wind_speed_mps": 6.0,
+          "ambient_temp_c": -5.0,
+          "wind_factor": 1.1,
+          "temp_effect_factor": 1.1
+        },
+        "scheduling_decision": {
+          "action": "继续任务",
+          "reason": "",
+          "priority": "normal",
+          "recommended_station_type": "充电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 1.5,
+          "estimated_energy_consumption_wh": 49.5,
+          "estimated_time_minutes": 4.5,
+          "total_path_cost": 2.19,
+          "can_safely_reach": true,
+          "remaining_energy_after_reaching_wh": 36.5,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "✅ 当前状态允许继续执行任务",
+          "📈 能量安全裕度：13.2%",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "物流无人机配送任务",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-57.1%)，无法保证安全返航",
+        "priority": "normal",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "物流无人机",
+        "battery_states": {
+          "soc_percent": 65.0,
+          "soh_percent": 88.0,
+          "temperature_c": 35.0,
+          "resistance_ohm": 0.05,
+          "total_energy_wh": 222.0,
+          "current_energy_wh": 144.3,
+          "effective_energy_wh": 126.98,
+          "max_power_w": 2464.2,
+          "temp_factor": 0.85
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 10.0,
+          "remaining_mission_energy_wh": 112.04,
+          "return_energy_wh": 134.44,
+          "total_required_energy_wh": 295.78,
+          "energy_deficit_wh": -168.79,
+          "energy_safety_margin_percent": -57.1
+        },
+        "environment_factors": {
+          "wind_speed_mps": 4.0,
+          "ambient_temp_c": 24.0,
+          "wind_factor": 1.1,
+          "temp_effect_factor": 1.1
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-57.1%)，无法保证安全返航",
+          "priority": "normal",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 3.5,
+          "estimated_energy_consumption_wh": 115.5,
+          "estimated_time_minutes": 10.5,
+          "total_path_cost": 5.11,
+          "can_safely_reach": false,
+          "remaining_energy_after_reaching_wh": 0,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "农业植保无人机作业",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-90.6%)，无法保证安全返航",
+        "priority": "normal",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 45.0,
+          "soh_percent": 83.0,
+          "temperature_c": 42.0,
+          "resistance_ohm": 0.06,
+          "total_energy_wh": 177.6,
+          "current_energy_wh": 79.92,
+          "effective_energy_wh": 66.33,
+          "max_power_w": 2053.5,
+          "temp_factor": 0.7
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 20.0,
+          "remaining_mission_energy_wh": 267.36,
+          "return_energy_wh": 320.83,
+          "total_required_energy_wh": 705.83,
+          "energy_deficit_wh": -639.5,
+          "energy_safety_margin_percent": -90.6
+        },
+        "environment_factors": {
+          "wind_speed_mps": 3.0,
+          "ambient_temp_c": 30.0,
+          "wind_factor": 1.0,
+          "temp_effect_factor": 1.1
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-90.6%)，无法保证安全返航",
+          "priority": "normal",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 1.2,
+          "estimated_energy_consumption_wh": 36.0,
+          "estimated_time_minutes": 3.6,
+          "total_path_cost": 1.68,
+          "can_safely_reach": true,
+          "remaining_energy_after_reaching_wh": 23.13,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "🌡️ 注意电池温度，避免长时间高温运行",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "紧急医疗物资配送",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-81.8%)，无法保证安全返航",
+        "priority": "high",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "物流无人机",
+        "battery_states": {
+          "soc_percent": 40.0,
+          "soh_percent": 90.0,
+          "temperature_c": 44.0,
+          "resistance_ohm": 0.05,
+          "total_energy_wh": 222.0,
+          "current_energy_wh": 88.8,
+          "effective_energy_wh": 79.92,
+          "max_power_w": 2464.2,
+          "temp_factor": 0.7
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 15.0,
+          "remaining_mission_energy_wh": 166.38,
+          "return_energy_wh": 199.65,
+          "total_required_energy_wh": 439.24,
+          "energy_deficit_wh": -359.32,
+          "energy_safety_margin_percent": -81.8
+        },
+        "environment_factors": {
+          "wind_speed_mps": 8.0,
+          "ambient_temp_c": 26.0,
+          "wind_factor": 1.25,
+          "temp_effect_factor": 1.15
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-81.8%)，无法保证安全返航",
+          "priority": "high",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 5.0,
+          "estimated_energy_consumption_wh": 187.5,
+          "estimated_time_minutes": 15.0,
+          "total_path_cost": 7.75,
+          "can_safely_reach": false,
+          "remaining_energy_after_reaching_wh": 0,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "🌡️ 注意电池温度，避免长时间高温运行",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "夜间安全巡逻任务",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-63.1%)，无法保证安全返航",
+        "priority": "normal",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 70.0,
+          "soh_percent": 86.0,
+          "temperature_c": 28.0,
+          "resistance_ohm": 0.05,
+          "total_energy_wh": 133.2,
+          "current_energy_wh": 93.24,
+          "effective_energy_wh": 80.19,
+          "max_power_w": 2464.2,
+          "temp_factor": 1.0
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 7.0,
+          "remaining_mission_energy_wh": 82.35,
+          "return_energy_wh": 98.82,
+          "total_required_energy_wh": 217.4,
+          "energy_deficit_wh": -137.21,
+          "energy_safety_margin_percent": -63.1
+        },
+        "environment_factors": {
+          "wind_speed_mps": 5.0,
+          "ambient_temp_c": 15.0,
+          "wind_factor": 1.1,
+          "temp_effect_factor": 1.1
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-63.1%)，无法保证安全返航",
+          "priority": "normal",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 2.8,
+          "estimated_energy_consumption_wh": 92.4,
+          "estimated_time_minutes": 8.4,
+          "total_path_cost": 4.088,
+          "can_safely_reach": false,
+          "remaining_energy_after_reaching_wh": 0,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "多无人机协同巡检",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-70.5%)，无法保证安全返航",
+        "priority": "normal",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 58.0,
+          "soh_percent": 89.0,
+          "temperature_c": 37.0,
+          "resistance_ohm": 0.05,
+          "total_energy_wh": 133.2,
+          "current_energy_wh": 77.26,
+          "effective_energy_wh": 68.76,
+          "max_power_w": 2464.2,
+          "temp_factor": 0.79
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 9.0,
+          "remaining_mission_energy_wh": 88.23,
+          "return_energy_wh": 105.88,
+          "total_required_energy_wh": 232.93,
+          "energy_deficit_wh": -164.17,
+          "energy_safety_margin_percent": -70.5
+        },
+        "environment_factors": {
+          "wind_speed_mps": 4.0,
+          "ambient_temp_c": 24.0,
+          "wind_factor": 1.1,
+          "temp_effect_factor": 1.1
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-70.5%)，无法保证安全返航",
+          "priority": "normal",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 2.0,
+          "estimated_energy_consumption_wh": 66.0,
+          "estimated_time_minutes": 6.0,
+          "total_path_cost": 2.92,
+          "can_safely_reach": false,
+          "remaining_energy_after_reaching_wh": 0,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    },
+    {
+      "scenario_name": "山区复杂地形巡检",
+      "success": true,
+      "message": "多状态电池预测计算完成",
+      "decision": {
+        "action": "前往换电站换电",
+        "reason": "能量安全裕度不足 (-75.4%)，无法保证安全返航",
+        "priority": "normal",
+        "recommended_station_type": "换电站"
+      },
+      "execution_time_ms": 0.0,
+      "result_data": {
+        "drone_model": "巡检无人机",
+        "battery_states": {
+          "soc_percent": 62.0,
+          "soh_percent": 84.0,
+          "temperature_c": 34.0,
+          "resistance_ohm": 0.06,
+          "total_energy_wh": 133.2,
+          "current_energy_wh": 82.58,
+          "effective_energy_wh": 69.37,
+          "max_power_w": 2053.5,
+          "temp_factor": 0.88
+        },
+        "mission_analysis": {
+          "remaining_distance_km": 8.0,
+          "remaining_mission_energy_wh": 106.94,
+          "return_energy_wh": 128.33,
+          "total_required_energy_wh": 282.33,
+          "energy_deficit_wh": -212.96,
+          "energy_safety_margin_percent": -75.4
+        },
+        "environment_factors": {
+          "wind_speed_mps": 7.0,
+          "ambient_temp_c": 20.0,
+          "wind_factor": 1.25,
+          "temp_effect_factor": 1.1
+        },
+        "scheduling_decision": {
+          "action": "前往换电站换电",
+          "reason": "能量安全裕度不足 (-75.4%)，无法保证安全返航",
+          "priority": "normal",
+          "recommended_station_type": "换电站"
+        },
+        "path_planning": {
+          "nearest_station_distance_km": 3.5,
+          "estimated_energy_consumption_wh": 131.25,
+          "estimated_time_minutes": 10.5,
+          "total_path_cost": 5.425,
+          "can_safely_reach": false,
+          "remaining_energy_after_reaching_wh": 0,
+          "health_factor_impact": 1.0
+        },
+        "recommendations": [
+          "🔋 立即前往换电站更换电池",
+          "📊 考虑电池健康状态选择最佳路径",
+          "⏱️ 预估换电时间：5-8分钟",
+          "⚠️ 能量裕度较低，建议提前规划返航",
+          "📋 定期检查电池状态和维护记录"
+        ]
+      }
+    }
+  ],
+  "task_simulation": [
+    {
+      "stage": "任务开始",
+      "soc": 95,
+      "remaining_distance": 20,
+      "decision": "前往换电站换电",
+      "energy_margin": -75.3
+    },
+    {
+      "stage": "任务进行25%",
+      "soc": 78,
+      "remaining_distance": 15,
+      "decision": "前往换电站换电",
+      "energy_margin": -72.9
+    },
+    {
+      "stage": "任务进行50%",
+      "soc": 62,
+      "remaining_distance": 10,
+      "decision": "前往换电站换电",
+      "energy_margin": -72.9
+    },
+    {
+      "stage": "任务进行75%",
+      "soc": 48,
+      "remaining_distance": 5,
+      "decision": "前往换电站换电",
+      "energy_margin": -54.5
+    },
+    {
+      "stage": "任务即将完成",
+      "soc": 25,
+      "remaining_distance": 2,
+      "decision": "前往换电站换电",
+      "energy_margin": -55.5
+    }
+  ],
+  "summary": {
+    "total_scenarios": 12,
+    "successful_scenarios": 12,
+    "failed_scenarios": 0,
+    "success_rate": 100.0,
+    "execution_time_stats": {
+      "average_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0
+    }
+  }
+}

@@ -1,0 +1,179 @@
+// src/styles/responsive.scss
+
+// 响应式设计变量
+$breakpoints: (
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px
+);
+
+$spacing: (
+    sm: 10px,
+    base: 20px,
+    lg: 30px
+);
+
+$font-sizes: (
+    sm: 0.875rem,
+    base: 1rem,
+    lg: 1.125rem,
+    xl: 1.25rem,
+    2xl: 1.5rem
+);
+
+$font-sizes-mobile: (
+    sm: 0.75rem,
+    base: 0.875rem,
+    lg: 1rem,
+    xl: 1.125rem,
+    2xl: 1.25rem
+);
+
+// 颜色变量
+$card-bg: rgba(6, 30, 93, 0.6);
+$border-color: rgba(0, 240, 255, 0.3);
+$shadow-color: rgba(0, 240, 255, 0.15);
+$shadow-hover-color: rgba(0, 240, 255, 0.25);
+
+// 响应式布局工具类
+.responsive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: map-get($spacing, base);
+}
+
+.responsive-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: map-get($spacing, base);
+}
+
+// 响应式卡片
+.responsive-card {
+    background: $card-bg;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: map-get($spacing, base);
+    box-shadow: 0 0 20px $shadow-color;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 30px $shadow-hover-color;
+    }
+}
+
+// 响应式容器
+.responsive-container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+
+    @media (min-width: map-get($breakpoints, sm)) {
+        max-width: 540px;
+    }
+
+    @media (min-width: map-get($breakpoints, md)) {
+        max-width: 720px;
+    }
+
+    @media (min-width: map-get($breakpoints, lg)) {
+        max-width: 960px;
+    }
+
+    @media (min-width: map-get($breakpoints, xl)) {
+        max-width: 1140px;
+    }
+}
+
+// 响应式字体
+.responsive-text-sm {
+    font-size: map-get($font-sizes, sm);
+
+    @media (max-width: map-get($breakpoints, md)) {
+        font-size: map-get($font-sizes-mobile, sm);
+    }
+}
+
+.responsive-text-base {
+    font-size: map-get($font-sizes, base);
+
+    @media (max-width: map-get($breakpoints, md)) {
+        font-size: map-get($font-sizes-mobile, base);
+    }
+}
+
+.responsive-text-lg {
+    font-size: map-get($font-sizes, lg);
+
+    @media (max-width: map-get($breakpoints, md)) {
+        font-size: map-get($font-sizes-mobile, lg);
+    }
+}
+
+.responsive-text-xl {
+    font-size: map-get($font-sizes, xl);
+
+    @media (max-width: map-get($breakpoints, md)) {
+        font-size: map-get($font-sizes-mobile, xl);
+    }
+}
+
+.responsive-text-2xl {
+    font-size: map-get($font-sizes, 2xl);
+
+    @media (max-width: map-get($breakpoints, md)) {
+        font-size: map-get($font-sizes-mobile, 2xl);
+    }
+}
+
+// 响应式间距
+.responsive-gap-sm {
+    gap: map-get($spacing, sm);
+
+    @media (max-width: map-get($breakpoints, md)) {
+        gap: 5px;
+    }
+}
+
+.responsive-gap-base {
+    gap: map-get($spacing, base);
+
+    @media (max-width: map-get($breakpoints, md)) {
+        gap: 15px;
+    }
+}
+
+.responsive-gap-lg {
+    gap: map-get($spacing, lg);
+
+    @media (max-width: map-get($breakpoints, md)) {
+        gap: 20px;
+    }
+}
+
+// 媒体查询混合宏
+@mixin respond-to($breakpoint) {
+    @if map-has-key($breakpoints, $breakpoint) {
+        @media (max-width: map-get($breakpoints, $breakpoint)) {
+            @content;
+        }
+    }
+
+    @else {
+        @warn "未知的断点: #{$breakpoint}";
+    }
+}
+
+// 使用示例：
+// .element {
+//   font-size: 16px;
+//   
+//   @include respond-to(md) {
+//     font-size: 14px;
+//   }
+// }

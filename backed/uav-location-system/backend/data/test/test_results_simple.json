@@ -1,0 +1,49 @@
+{
+  "timestamp": "2024-01-01T00:00:00Z",
+  "test_scenario": "专利实施例",
+  "input": {
+    "drone_model": "巡检无人机",
+    "battery_capacity": 6000,
+    "battery_voltage": 22.2,
+    "current_soc": 57,
+    "current_soh": 85,
+    "battery_temp": 45,
+    "battery_resistance": 0.06,
+    "mission_distance": 8,
+    "remaining_distance": 6,
+    "cruise_speed": 12,
+    "wind_speed": 5,
+    "ambient_temp": 25,
+    "mission_priority": "normal",
+    "nearest_swap_station": 1.5
+  },
+  "output": {
+    "success": true,
+    "message": "多状态电池预测计算完成",
+    "scheduling_decision": {
+      "action": "前往换电站换电",
+      "reason": "能量安全裕度不足 (-60.2%)，无法保证安全返航",
+      "priority": "normal",
+      "recommended_station_type": "换电站"
+    },
+    "battery_states": {
+      "soc_percent": 57.0,
+      "soh_percent": 85.0,
+      "temperature_c": 45.0,
+      "resistance_ohm": 0.06,
+      "total_energy_wh": 133.2,
+      "current_energy_wh": 75.92,
+      "effective_energy_wh": 64.54,
+      "max_power_w": 2053.5,
+      "temp_factor": 0.7
+    },
+    "mission_analysis": {
+      "remaining_distance_km": 6.0,
+      "remaining_mission_energy_wh": 61.49,
+      "return_energy_wh": 73.79,
+      "total_required_energy_wh": 162.34,
+      "energy_deficit_wh": -97.81,
+      "energy_safety_margin_percent": -60.2
+    }
+  }
+}

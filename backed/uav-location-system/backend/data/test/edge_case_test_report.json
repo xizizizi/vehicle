@@ -1,0 +1,264 @@
+{
+  "timestamp": "2026-02-05 21:18:54",
+  "total_tests": 51,
+  "passed_tests": 51,
+  "failed_tests": 0,
+  "pass_rate": 100.0,
+  "results": [
+    {
+      "category": "极端SOC值测试",
+      "test_name": "SOC=100% (满电)",
+      "success": true
+    },
+    {
+      "category": "极端SOC值测试",
+      "test_name": "SOC=95% (高电量)",
+      "success": true
+    },
+    {
+      "category": "极端SOC值测试",
+      "test_name": "SOC=5% (极低电量)",
+      "success": true
+    },
+    {
+      "category": "极端SOC值测试",
+      "test_name": "SOC=1% (濒临没电)",
+      "success": true
+    },
+    {
+      "category": "极端SOC值测试",
+      "test_name": "SOC=0% (没电)",
+      "success": true
+    },
+    {
+      "category": "极端SOC值测试",
+      "test_name": "SOC=150% (超100%)",
+      "success": true
+    },
+    {
+      "category": "极端SOC值测试",
+      "test_name": "SOC=-10% (负值)",
+      "success": true
+    },
+    {
+      "category": "极端SOH值测试",
+      "test_name": "SOH=100% (全新电池)",
+      "success": true
+    },
+    {
+      "category": "极端SOH值测试",
+      "test_name": "SOH=95% (优秀状态)",
+      "success": true
+    },
+    {
+      "category": "极端SOH值测试",
+      "test_name": "SOH=71% (接近临界)",
+      "success": true
+    },
+    {
+      "category": "极端SOH值测试",
+      "test_name": "SOH=69% (略低于临界)",
+      "success": true
+    },
+    {
+      "category": "极端SOH值测试",
+      "test_name": "SOH=50% (严重老化)",
+      "success": true
+    },
+    {
+      "category": "极端SOH值测试",
+      "test_name": "SOH=20% (即将报废)",
+      "success": true
+    },
+    {
+      "category": "极端SOH值测试",
+      "test_name": "SOH=0% (报废电池)",
+      "success": true
+    },
+    {
+      "category": "极端SOH值测试",
+      "test_name": "SOH=150% (超100%)",
+      "success": true
+    },
+    {
+      "category": "极端SOH值测试",
+      "test_name": "SOH=-10% (负值)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=-20℃ (极寒)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=-10℃ (严寒)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=0℃ (冰点)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=15℃ (低温)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=25℃ (理想)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=35℃ (温暖)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=45℃ (高温)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=55℃ (危险高温)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=65℃ (极端高温)",
+      "success": true
+    },
+    {
+      "category": "极端温度值测试",
+      "test_name": "温度=100℃ (沸点)",
+      "success": true
+    },
+    {
+      "category": "零值和负值测试",
+      "test_name": "零容量电池",
+      "success": true
+    },
+    {
+      "category": "零值和负值测试",
+      "test_name": "零电压电池",
+      "success": true
+    },
+    {
+      "category": "零值和负值测试",
+      "test_name": "零距离任务",
+      "success": true
+    },
+    {
+      "category": "零值和负值测试",
+      "test_name": "负距离任务",
+      "success": true
+    },
+    {
+      "category": "零值和负值测试",
+      "test_name": "零风速",
+      "success": true
+    },
+    {
+      "category": "零值和负值测试",
+      "test_name": "负风速",
+      "success": true
+    },
+    {
+      "category": "零值和负值测试",
+      "test_name": "零内阻",
+      "success": true
+    },
+    {
+      "category": "零值和负值测试",
+      "test_name": "负内阻",
+      "success": true
+    },
+    {
+      "category": "缺失值和None值测试",
+      "test_name": "缺少SOC参数",
+      "success": true
+    },
+    {
+      "category": "缺失值和None值测试",
+      "test_name": "缺少SOH参数",
+      "success": true
+    },
+    {
+      "category": "缺失值和None值测试",
+      "test_name": "缺少所有可选参数",
+      "success": true
+    },
+    {
+      "category": "缺失值和None值测试",
+      "test_name": "全部使用默认值",
+      "success": true
+    },
+    {
+      "category": "缺失值和None值测试",
+      "test_name": "None值SOC",
+      "success": true
+    },
+    {
+      "category": "缺失值和None值测试",
+      "test_name": "None值SOH",
+      "success": true
+    },
+    {
+      "category": "缺失值和None值测试",
+      "test_name": "None值温度",
+      "success": true
+    },
+    {
+      "category": "无效数据类型测试",
+      "test_name": "字符串类型SOC",
+      "success": true
+    },
+    {
+      "category": "无效数据类型测试",
+      "test_name": "列表类型参数",
+      "success": true
+    },
+    {
+      "category": "无效数据类型测试",
+      "test_name": "字典类型参数",
+      "success": true
+    },
+    {
+      "category": "无效数据类型测试",
+      "test_name": "布尔类型参数",
+      "success": true
+    },
+    {
+      "category": "无效数据类型测试",
+      "test_name": "复杂对象",
+      "success": true
+    },
+    {
+      "category": "性能和大数值测试",
+      "test_name": "极大距离任务",
+      "success": true
+    },
+    {
+      "category": "性能和大数值测试",
+      "test_name": "极小距离任务",
+      "success": true
+    },
+    {
+      "category": "性能和大数值测试",
+      "test_name": "极大风速",
+      "success": true
+    },
+    {
+      "category": "性能和大数值测试",
+      "test_name": "极大电池容量",
+      "success": true
+    },
+    {
+      "category": "性能和大数值测试",
+      "test_name": "极高电压",
+      "success": true
+    }
+  ]
+}
